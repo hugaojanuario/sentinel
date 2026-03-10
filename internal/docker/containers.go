@@ -47,14 +47,7 @@ func RestartContainer(id string) error {
 		return err
 	}
 
-	err = client.ContainerRestart(context.Background(), id, container.StopOptions{})
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-
+	return client.ContainerRestart(context.Background(), id, container.StopOptions{})
 }
 
 func GetContainerLogs(id string) (string, error) {
