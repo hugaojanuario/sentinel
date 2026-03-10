@@ -9,6 +9,5 @@ import (
 func main() {
 	fmt.Println("Sentinel starting...")
 	router := api.NewRouter()
-
-	router.Run(":9191")
+	router.Run(":8080")
 }
