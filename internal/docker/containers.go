@@ -15,11 +15,11 @@ type ContainerInfo struct{
 
 func ListContainers() ([]ContainerInfo, error){
 
-	cli, err := NewCLient()
+	client, err := NewCLient()
 	if err != nil{
 		return nil, err
 	}
-	containers, err := cli.ContainerList(context.Background(), container.ListOptions{})
+	containers, err := client.ContainerList(context.Background(), container.ListOptions{})
 	if err != nil{
 		return nil, err
 	}
@@ -37,4 +37,22 @@ func ListContainers() ([]ContainerInfo, error){
 
 	return result, nil
 
+}
+
+func RestartContainer(id string) error{
+
+	client, err := NewCLient()
+	if err != nil{
+		return err
+	}
+
+	err = client.ContainerRestart(context.Background(), id, container.StopOptions{})
+
+	if err != nil{
+		return err
+	}
+
+	return nil
+
+	
 }

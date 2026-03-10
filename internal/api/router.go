@@ -25,5 +25,17 @@ func NewRouter ()*gin.Engine{
 		c.JSON(http.StatusOK, containers)
 	})
 
+	router.POST("/containers/:id/restart", func(c *gin.Context){
+		id := c.Param("id")
+		err := docker.RestartContainer(id)
+
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message":"restarted container"})
+	})
+
 	return router
 }
