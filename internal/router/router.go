@@ -1,29 +1,21 @@
-package api
+package router
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hugaojanuario/sentinel/internal/controllers"
 	"github.com/hugaojanuario/sentinel/internal/docker"
 )
 
-func NewRouter() *gin.Engine {
+func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/status", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "OK"})
 	})
 
-	router.GET("/containers", func(c *gin.Context) {
-		containers, err := docker.ListContainers()
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, containers)
-	})
+	router.GET("/containers", controllers.ListContainers)
 
 	router.POST("/containers/:id/restart", func(c *gin.Context) {
 		id := c.Param("id")
