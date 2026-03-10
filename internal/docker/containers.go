@@ -1,36 +1,37 @@
 package docker
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/docker/docker/api/types/container"
 )
 
-type ContainerInfo struct{
-	ID string `json:"id"`
-	Name string `json:"name"`
-	Image string `json:"image"`
+type ContainerInfo struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Image  string `json:"image"`
 	Status string `json:"status"`
 }
 
-func ListContainers() ([]ContainerInfo, error){
+func ListContainers() ([]ContainerInfo, error) {
 
 	client, err := NewCLient()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	containers, err := client.ContainerList(context.Background(), container.ListOptions{})
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
-	
+
 	var result []ContainerInfo
-	for _, c := range containers{
+	for _, c := range containers {
 
 		result = append(result, ContainerInfo{
-			ID: c.ID,
-			Name: c.Names[0],
-			Image: c.Image,
+			ID:     c.ID,
+			Name:   c.Names[0],
+			Image:  c.Image,
 			Status: c.Status,
 		})
 	}
@@ -39,20 +40,46 @@ func ListContainers() ([]ContainerInfo, error){
 
 }
 
-func RestartContainer(id string) error{
+func RestartContainer(id string) error {
 
 	client, err := NewCLient()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
 	err = client.ContainerRestart(context.Background(), id, container.StopOptions{})
 
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
 	return nil
 
-	
+}
+
+func GetContainerLogs(id string) (string, error) {
+	client, err := NewCLient()
+	if err != nil {
+		return "", err
+	}
+
+	menu := container.LogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+		Tail:       "50",
+	}
+
+	reader, err := client.ContainerLogs(context.Background(), id, menu)
+	if err != nil {
+		return "", err
+	}
+
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(reader)
+
+	if err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
 }
