@@ -37,5 +37,17 @@ func NewRouter() *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"message": "restarted container"})
 	})
 
+	router.GET("/containers/:id/logs", func(c *gin.Context){
+		id := c.Param("id")
+		logs, err := docker.GetContainerLogs(id)
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+			return
+		}
+
+		c.String(http.StatusOK, logs)
+
+	})
+
 	return router
 }
