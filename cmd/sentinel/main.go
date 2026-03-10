@@ -10,5 +10,5 @@ func main() {
 	fmt.Println("Sentinel starting...")
 	router := api.NewRouter()
 
-	router.Run()
+	router.Run(":9191")
 }
