@@ -29,3 +29,13 @@ func GetContainerLogs(id string) (string, error) {
 
 	return logs, nil
 }
+
+func GetContainerStats(id string) (interface{}, error) {
+
+	stats, err := docker.GetContainerStats(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return stats, nil
+}

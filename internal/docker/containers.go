@@ -3,6 +3,7 @@ package docker
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 
 	"github.com/docker/docker/api/types/container"
 )
@@ -75,4 +76,28 @@ func GetContainerLogs(id string) (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+func GetContainerStats(id string) (interface{}, error) {
+
+	client, err := NewCLient()
+	if err != nil {
+		return nil, err
+	}
+
+	stats, err := client.ContainerStats(context.Background(), id, false)
+	if err != nil {
+		return nil, err
+	}
+
+	defer stats.Body.Close()
+
+	var data map[string]interface{}
+
+	err = json.NewDecoder(stats.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }

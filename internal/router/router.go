@@ -10,7 +10,7 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
-	router.GET("/status", func(c *gin.Context) {
+	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "OK"})
 	})
 
@@ -19,6 +19,8 @@ func SetupRouter() *gin.Engine {
 	router.POST("/containers/:id/restart", controllers.RestartContainer)
 
 	router.GET("/containers/:id/logs", controllers.GetContainerLogs)
+
+	router.GET("/containers/:id/stats", controllers.GetContainerStats)
 
 	return router
 }
