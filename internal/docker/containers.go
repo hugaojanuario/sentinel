@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 
 	"github.com/docker/docker/api/types/container"
 )
@@ -100,4 +101,25 @@ func GetContainerStats(id string) (interface{}, error) {
 	}
 
 	return data, nil
+}
+
+func StreamContainerLogs(id string) (io.ReadCloser, error) {
+	client, err := NewCLient()
+	if err != nil {
+		return nil, err
+	}
+
+	options := container.LogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+		Follow:     true,
+		Tail:       "50",
+	}
+
+	reader, err := client.ContainerLogs(context.Background(), id, options)
+	if err != nil {
+		return nil, err
+	}
+
+	return reader, nil
 }
