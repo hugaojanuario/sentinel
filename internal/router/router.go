@@ -16,5 +16,7 @@ func SetupRouter() *gin.Engine {
 
 	router.GET("/containers/:id/stats", controllers.GetContainerStats)
 
+	router.GET("/containers/:id/logs/stream", controllers.StreamLogs)
+
 	return router
 }
