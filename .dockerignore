@@ -1,0 +1,4 @@
+cmd/api/tmp/
+frontend/
+.git/
+.idea/
