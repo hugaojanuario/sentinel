@@ -8,112 +8,193 @@ Container management service built with **Go**.
 
 ## Overview
 
-Sentinel is a lightweight backend service designed to simplify the management of containers running on a host machine.
-
-The application runs on the same server where containers are hosted and exposes a **REST API** that allows administrators or other services to monitor and control containers programmatically.
-
-The project interacts directly with the Docker Engine using the official Go SDK, allowing operations such as listing containers, restarting them, retrieving logs and inspecting runtime statistics.
-
-Sentinel aims to provide a simple and modular foundation for container monitoring and operational automation.
+Sentinel is a lightweight service that runs on the same host as your containers and exposes a REST API to monitor and control them. It communicates directly with the Docker Engine via the official Go SDK and ships with a React frontend served through Nginx.
 
 ---
 
 ## Features
 
-* List containers running on the host
+* List all running containers
 * Restart containers
-* Retrieve container logs
-* Inspect container resource usage
-* Manage containers through a REST API
+* Retrieve the last 50 lines of logs
+* Inspect CPU and memory usage
+* Stream logs in real time
+* Web interface included
 
 ---
 
-## API Endpoints
+## Requirements
+
+**To run with Docker (recommended):**
+- [Docker](https://docs.docker.com/get-docker/) with Compose — Windows, Linux and macOS
+
+**To run locally:**
+- [Go 1.21+](https://go.dev/dl/)
+- [Node.js 18+](https://nodejs.org/) — only needed for the frontend
+
+---
+
+## Running with Docker
+
+Clone the repository:
+
+```bash
+git clone https://github.com/hugaojanuario/sentinel.git
+cd sentinel
+```
+
+Copy the env file:
+
+```bash
+cp .env.example .env
+```
+
+> **Windows users:** open `.env` and set `DOCKER_SOCK=//var/run/docker.sock`
+
+Start everything:
+
+```bash
+docker compose up --build
+```
+
+The frontend will be at `http://localhost` and the API at `http://localhost/api`.
+
+---
+
+## Running locally
+
+**Backend:**
+
+```bash
+go mod tidy
+go run cmd/api/main.go
+```
+
+Starts on `http://localhost:9090`. To use a different port:
+
+```bash
+PORT=8080 go run cmd/api/main.go
+```
+
+**Frontend:**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Starts on `http://localhost:5173` and proxies API calls to the backend automatically.
+
+---
+
+## API
 
 ### List containers
 
-Returns all containers currently running on the host.
+Returns all running containers.
 
 ```
 GET /containers
+```
+
+```json
+[
+  {
+    "id": "a1b2c3d4e5f6",
+    "name": "/my-container",
+    "image": "nginx:latest",
+    "status": "Up 3 hours"
+  }
+]
 ```
 
 ---
 
 ### Restart container
 
-Restarts a specific container.
-
 ```
 POST /containers/:id/restart
+```
+
+```json
+{ "message": "container restarted" }
 ```
 
 ---
 
 ### Container logs
 
-Returns recent logs from a container.
+Returns the last 50 lines of logs.
 
 ```
 GET /containers/:id/logs
 ```
 
+```
+plain text response
+```
+
 ---
 
-### Container statistics
+### Container stats
 
-Returns runtime statistics such as CPU and memory usage.
+Returns current CPU and memory usage from the Docker Engine.
 
 ```
 GET /containers/:id/stats
 ```
 
----
-
-## Running the project
-
-Clone the repository:
-
-```
-git clone https://github.com/your-username/sentinel.git
-cd sentinel
-```
-
-Install dependencies:
-
-```
-go mod tidy
-```
-
-Run the service:
-
-```
-go run cmd/sentinel/main.go
-```
-
-The API will start on:
-
-```
-http://localhost:8080
+```json
+{
+  "cpu_stats": { ... },
+  "memory_stats": { ... },
+  ...
+}
 ```
 
 ---
 
-## Project Structure
+### Live log stream
+
+Streams logs in real time using chunked transfer encoding. The connection stays open until the container stops or the client disconnects.
+
+```
+GET /containers/:id/logs/stream
+```
+
+```
+Content-Type: text/plain
+Transfer-Encoding: chunked
+```
+
+---
+
+## Project structure
 
 ```
 cmd/
-  sentinel/
-    main.go
+  api/
+    main.go           # entry point
 
 internal/
-  router/
-  controllers/
-  services/
-  docker/
+  router/             # route definitions
+  controllers/        # request handling
+  services/           # business logic
+  docker/             # Docker Engine communication
+
+frontend/
+  src/                # React application
+  nginx.conf          # production server config
+  Dockerfile
 ```
 
-* **router**: defines API routes
-* **controllers**: handles HTTP requests and responses
-* **services**: contains business logic
-* **docker**: communicates with the Docker Engine
+---
+
+## Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `9090` | Backend listening port |
+| `FRONTEND_PORT` | `80` | Frontend exposed port |
+| `DOCKER_SOCK` | `/var/run/docker.sock` | Docker socket path |

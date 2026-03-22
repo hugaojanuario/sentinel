@@ -3,8 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - PORT=${PORT:-9090}
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
     restart: unless-stopped
 
   frontend:
@@ -12,7 +14,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on:
       - backend
     restart: unless-stopped

@@ -156,9 +156,27 @@ export default function ContainerPanel({ container, onClose, onRefresh }) {
             {!logsLoading && (
               <>
                 <pre className="log-output">{logs || 'No logs available.'}</pre>
-                <button className="btn-secondary" onClick={() => setTab('logs')}>
-                  ↺ Refresh
-                </button>
+                <div className="logs-actions">
+                  <button className="btn-secondary" onClick={() => setTab('logs')}>
+                    ↺ Refresh
+                  </button>
+                  {logs && (
+                    <button
+                      className="btn-secondary"
+                      onClick={() => {
+                        const blob = new Blob([logs], { type: 'text/plain' })
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `${name}.log`
+                        a.click()
+                        URL.revokeObjectURL(url)
+                      }}
+                    >
+                      ↓ Download
+                    </button>
+                  )}
+                </div>
               </>
             )}
           </div>

@@ -41,11 +41,26 @@ body {
   padding: 12px 20px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 0 #1f6feb33;
   flex-shrink: 0;
 }
 
 .logo {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.logo-text {
+  font-size: 15px;
   font-weight: 700;
   color: var(--accent);
   letter-spacing: 2px;
@@ -113,6 +128,53 @@ body {
 
 .status-msg.error {
   color: var(--red);
+}
+
+/* System group */
+
+.system-group {
+  margin-bottom: 4px;
+}
+
+.system-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 0 6px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  user-select: none;
+  letter-spacing: 0.5px;
+}
+
+.system-toggle:hover {
+  opacity: 1;
+}
+
+.system-arrow {
+  font-size: 13px;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.15s;
+  transform: rotate(0deg);
+}
+
+.system-arrow.open {
+  transform: rotate(90deg);
+}
+
+.system-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
 }
 
 /* Cards */
@@ -387,6 +449,14 @@ body {
   word-break: break-all;
 }
 
+/* Logs actions */
+
+.logs-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 /* Stream */
 
 .stream-view {
@@ -434,6 +504,45 @@ body {
 .btn-secondary:hover {
   border-color: var(--text-muted);
   color: var(--text);
+}
+
+/* Footer */
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.footer-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 12px;
+  transition: color 0.15s;
+}
+
+.footer-link:hover {
+  color: var(--accent);
+}
+
+.github-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.footer-credits {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.6;
 }
 
 /* Scrollbar */
