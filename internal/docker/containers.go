@@ -16,6 +16,27 @@ type ContainerInfo struct {
 	Status string `json:"status"`
 }
 
+type ContainerStats struct {
+	CpuStats    CpuStats    `json:"cpu_stats"`
+	PreCpuStats CpuStats    `json:"precpu_stats"`
+	MemoryStats MemoryStats `json:"memory_stats"`
+}
+
+type CpuStats struct {
+	CpuUsage       CpuUsage `json:"cpu_usage"`
+	SystemCpuUsage uint64   `json:"system_cpu_usage"`
+	OnlineCpus     uint64   `json:"online_cpus"`
+}
+
+type CpuUsage struct {
+	TotalUsage uint64 `json:"total_usage"`
+}
+
+type MemoryStats struct {
+	Usage uint64 `json:"usage"`
+	Limit uint64 `json:"limit"`
+}
+
 func ListContainers() ([]ContainerInfo, error) {
 
 	client, err := GetClient()
