@@ -1,16 +1,20 @@
 package docker
 
 import (
+	"sync"
+
 	"github.com/docker/docker/client"
 )
 
-func NewCLient() (*client.Client, error) {
+var (
+	instance *client.Client
+	once     sync.Once
+)
 
-	cli, err := client.NewClientWithOpts(client.FromEnv)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return cli, nil
+func GetClient() (*client.Client, error) {
+	var err error
+	once.Do(func() {
+		instance, err = client.NewClientWithOpts(client.FromEnv)
+	})
+	return instance, err
 }

@@ -18,7 +18,7 @@ type ContainerInfo struct {
 
 func ListContainers() ([]ContainerInfo, error) {
 
-	client, err := NewCLient()
+	client, err := GetClient()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func ListContainers() ([]ContainerInfo, error) {
 
 func RestartContainer(id string) error {
 
-	client, err := NewCLient()
+	client, err := GetClient()
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func RestartContainer(id string) error {
 }
 
 func GetContainerLogs(id string) (string, error) {
-	client, err := NewCLient()
+	client, err := GetClient()
 	if err != nil {
 		return "", err
 	}
@@ -81,7 +81,7 @@ func GetContainerLogs(id string) (string, error) {
 
 func GetContainerStats(id string) (interface{}, error) {
 
-	client, err := NewCLient()
+	client, err := GetClient()
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func GetContainerStats(id string) (interface{}, error) {
 }
 
 func StreamContainerLogs(id string) (io.ReadCloser, error) {
-	client, err := NewCLient()
+	client, err := GetClient()
 	if err != nil {
 		return nil, err
 	}
