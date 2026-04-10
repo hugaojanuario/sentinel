@@ -30,11 +30,11 @@ func GetContainerLogs(id string) (string, error) {
 	return logs, nil
 }
 
-func GetContainerStats(id string) (interface{}, error) {
+func GetContainerStats(id string) (docker.ContainerStats, error) {
 
 	stats, err := docker.GetContainerStats(id)
 	if err != nil {
-		return nil, err
+		return docker.ContainerStats{}, err
 	}
 
 	return stats, nil

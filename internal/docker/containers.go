@@ -100,28 +100,28 @@ func GetContainerLogs(id string) (string, error) {
 	return buf.String(), nil
 }
 
-func GetContainerStats(id string) (interface{}, error) {
+func GetContainerStats(id string) (ContainerStats, error) {
 
 	client, err := GetClient()
 	if err != nil {
-		return nil, err
+		return ContainerStats{}, err
 	}
 
 	stats, err := client.ContainerStats(context.Background(), id, false)
 	if err != nil {
-		return nil, err
+		return ContainerStats{}, err
 	}
 
 	defer stats.Body.Close()
 
-	var data map[string]interface{}
+	var containerStats ContainerStats
 
-	err = json.NewDecoder(stats.Body).Decode(&data)
+	err = json.NewDecoder(stats.Body).Decode(&containerStats)
 	if err != nil {
-		return nil, err
+		return ContainerStats{}, err
 	}
 
-	return data, nil
+	return containerStats, nil
 }
 
 func StreamContainerLogs(id string) (io.ReadCloser, error) {
