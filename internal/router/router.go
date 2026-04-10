@@ -1,12 +1,15 @@
 package router
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/hugaojanuario/sentinel/internal/controllers"
 )
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
+
+	router.Use(cors.Default())
 
 	router.GET("/containers", controllers.ListContainers)
 
