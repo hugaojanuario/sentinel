@@ -4,9 +4,16 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
+	"strings"
 
 	"github.com/docker/docker/api/types/container"
+)
+
+var (
+	ErrNotFound             = errors.New("not found")
+	ErrContainersNotRunning = errors.New("containers not running")
 )
 
 type ContainerInfo struct {
@@ -64,13 +71,20 @@ func ListContainers() ([]ContainerInfo, error) {
 }
 
 func RestartContainer(id string) error {
-
 	client, err := GetClient()
 	if err != nil {
 		return err
 	}
 
-	return client.ContainerRestart(context.Background(), id, container.StopOptions{})
+	err = client.ContainerRestart(context.Background(), id, container.StopOptions{})
+	if err != nil {
+		if strings.Contains(err.Error(), "No such container") {
+			return ErrNotFound
+		}
+		return err
+	}
+
+	return nil
 }
 
 func GetContainerLogs(id string) (string, error) {
