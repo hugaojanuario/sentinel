@@ -5,8 +5,12 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=${PORT:-9090}
+      - DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/sentinel?sslmode=disable}
+      - JWT_SECRET=${JWT_SECRET:-secret}
     volumes:
       - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
+    depends_on:
+      - postgres
     restart: unless-stopped
 
   frontend:
@@ -18,3 +22,18 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-sentinel}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
