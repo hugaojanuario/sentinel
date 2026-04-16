@@ -53,7 +53,7 @@ func (s *Service) Login(req models.LoginRequest) (*models.LoginResponse, error) 
 
 	err = bcrypt.CompareHashAndPassword([]byte(existing.PasswordHash), []byte(req.Password))
 	if err != nil {
-		return nil, fmt.Errorf("senha incorreta: %w", err)
+		return nil, ErrInvalidCredentials
 	}
 
 	claims := Claims{

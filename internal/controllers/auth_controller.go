@@ -20,7 +20,7 @@ func NewAuthController(s *services.Service) *AuthController {
 func (a *AuthController) Login(c *gin.Context) {
 	var req models.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.RespondError(c, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "body invalid."})
 		return
 	}
 
