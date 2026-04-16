@@ -1,29 +1,18 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hugaojanuario/sentinel/internal/docker"
 	"github.com/hugaojanuario/sentinel/internal/services"
+	"github.com/hugaojanuario/sentinel/internal/utils"
 )
-
-func respondError(c *gin.Context, err error) {
-	switch {
-	case errors.Is(err, docker.ErrNotFound):
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-	case errors.Is(err, docker.ErrContainersNotRunning):
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	default:
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	}
-}
 
 func ListContainers(c *gin.Context) {
 	containers, err := services.ListContainers()
 	if err != nil {
-		respondError(c, err)
+		utils.RespondError(c, err)
 		return
 	}
 
@@ -37,7 +26,7 @@ func RestartContainer(c *gin.Context) {
 	err := services.RestartContainer(id)
 
 	if err != nil {
-		respondError(c, err)
+		utils.RespondError(c, err)
 		return
 	}
 
@@ -48,7 +37,7 @@ func GetContainerLogs(c *gin.Context) {
 	id := c.Param("id")
 	logs, err := services.GetContainerLogs(id)
 	if err != nil {
-		respondError(c, err)
+		utils.RespondError(c, err)
 		return
 	}
 
@@ -63,7 +52,7 @@ func GetContainerStats(c *gin.Context) {
 	stats, err := services.GetContainerStats(id)
 
 	if err != nil {
-		respondError(c, err)
+		utils.RespondError(c, err)
 		return
 	}
 
@@ -75,7 +64,7 @@ func StreamLogs(c *gin.Context) {
 
 	reader, err := docker.StreamContainerLogs(id)
 	if err != nil {
-		respondError(c, err)
+		utils.RespondError(c, err)
 		return
 	}
 

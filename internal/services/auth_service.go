@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -12,6 +13,7 @@ import (
 )
 
 var secret = []byte(os.Getenv("JWT_SECRET"))
+var ErrInvalidCredentials = errors.New("invalid credentials")
 
 type Claims struct {
 	UserId string `json:"userId"`
@@ -46,7 +48,7 @@ func (s *Service) Login(req models.LoginRequest) (*models.LoginResponse, error) 
 		return nil, fmt.Errorf("erro ao encontrar o usuario pelo email: %w", err)
 	}
 	if existing == nil {
-		return nil, fmt.Errorf("usuario nao encontrado")
+		return nil, ErrInvalidCredentials
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(existing.PasswordHash), []byte(req.Password))
