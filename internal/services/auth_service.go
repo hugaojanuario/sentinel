@@ -2,11 +2,21 @@ package services
 
 import (
 	"fmt"
+	"os"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/hugaojanuario/sentinel/internal/models"
 	"github.com/hugaojanuario/sentinel/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var secret = []byte(os.Getenv("JWT_SECRET"))
+
+type Claims struct {
+	UserId string `json:"userId"`
+	jwt.RegisteredClaims
+}
 
 type Service struct {
 	r *repository.Repository
@@ -30,11 +40,34 @@ func (s *Service) CreateUser(req models.CreateUserRequest) (*models.User, error)
 	return user, nil
 }
 
-func (s *Service) FindUserByEmail(email string) (models.User, error) {
-	user, err := s.r.FindUserByEMail(email)
-	if err !+ nil{
-		return nil, err
+func (s *Service) Login(req models.LoginRequest) (*models.LoginResponse, error) {
+	existing, err := s.r.FindUserByEMail(req.Email)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao encontrar o usuario pelo email: %w", err)
+	}
+	if existing == nil {
+		return nil, fmt.Errorf("usuario nao encontrado")
 	}
 
+	err = bcrypt.CompareHashAndPassword([]byte(existing.PasswordHash), []byte(req.Password))
+	if err != nil {
+		return nil, fmt.Errorf("senha incorreta: %w", err)
+	}
 
+	claims := Claims{
+		UserId: existing.ID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	tokenStr, err := token.SignedString(secret)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao assinar token: %w", err)
+	}
+
+	return &models.LoginResponse{Token: tokenStr}, nil
 }
