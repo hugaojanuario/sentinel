@@ -6,10 +6,12 @@ import (
 	"github.com/hugaojanuario/sentinel/internal/controllers"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(auth controllers.AuthController) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(cors.Default())
+
+	router.POST("/login", auth.Login)
 
 	router.GET("/containers", controllers.ListContainers)
 

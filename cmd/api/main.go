@@ -2,9 +2,15 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
+	"github.com/hugaojanuario/sentinel/internal/controllers"
+	"github.com/hugaojanuario/sentinel/internal/database"
+	"github.com/hugaojanuario/sentinel/internal/repository"
 	"github.com/hugaojanuario/sentinel/internal/router"
+	"github.com/hugaojanuario/sentinel/internal/services"
+	"github.com/hugaojanuario/sentinel/pkg/config"
 )
 
 func main() {
@@ -13,6 +19,24 @@ func main() {
 	if port == "" {
 		port = "9090"
 	}
-	router := router.SetupRouter()
+
+	cfg := config.LoadDotEnv()
+	db, err := database.Conn(database.Config{
+		DB_HOST:     cfg.DB_HOST,
+		DB_PORT:     cfg.DB_PORT,
+		DB_USER:     cfg.DB_USER,
+		DB_PASSWORD: cfg.DB_PASSWORD,
+		DB_NAME:     cfg.DB_NAME,
+		DB_SSLMODE:  cfg.DB_SSLMODE,
+	})
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	defer db.Close()
+
+	repo := repository.NewRepository(db)
+	serv := services.NewService(repo)
+	auth := controllers.NewAuthController(serv)
+	router := router.SetupRouter(*auth)
 	router.Run(":" + port)
 }

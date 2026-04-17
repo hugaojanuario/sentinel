@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -19,7 +19,7 @@ type Config struct {
 func LoadDotEnv() *Config {
 	err := godotenv.Load("../../.env")
 	if err != nil {
-		log.Fatal("error : erro ao ler a .env")
+		fmt.Errorf("error : erro ao ler a .env: %w", err)
 	}
 
 	return &Config{
