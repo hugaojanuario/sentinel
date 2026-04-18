@@ -1,5 +1,27 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=GoLand
+### List Containers
+GET localhost:9090/containers/
+Authorization: Bearer {{token}}
 
 ###
+
+### Restart Container
+POST localhost:9090/containers/{{container_id}}/restart
+Authorization: Bearer {{token}}
+
+###
+
+### Get Container Logs
+GET localhost:9090/containers/{{container_id}}/logs
+Authorization: Bearer {{token}}
+
+###
+
+### Get Container Stats
+GET localhost:9090/containers/{{container_id}}/stats
+Authorization: Bearer {{token}}
+
+###
+
+### Stream Container Logs
+GET localhost:9090/containers/{{container_id}}/logs/stream
+Authorization: Bearer {{token}}

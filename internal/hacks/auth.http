@@ -1,5 +1,20 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=GoLand
+### Register
+POST localhost:9090/register
+Content-Type: application/json
+
+{
+	"name": "user",
+	"email": "user@email.com",
+	"password": "123456"
+}
 
 ###
+
+### Login
+POST localhost:9090/login
+Content-Type: application/json
+
+{
+	"email": "user@email.com",
+	"password": "123456"
+}

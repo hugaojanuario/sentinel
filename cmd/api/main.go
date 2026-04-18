@@ -5,12 +5,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/hugaojanuario/sentinel/internal/controllers"
-	"github.com/hugaojanuario/sentinel/internal/database"
+	"github.com/hugaojanuario/sentinel/internal/http/handler"
+	"github.com/hugaojanuario/sentinel/internal/http/router"
 	"github.com/hugaojanuario/sentinel/internal/repository"
-	"github.com/hugaojanuario/sentinel/internal/router"
 	"github.com/hugaojanuario/sentinel/internal/services"
 	"github.com/hugaojanuario/sentinel/pkg/config"
+	"github.com/hugaojanuario/sentinel/pkg/database"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 
 	repo := repository.NewRepository(db)
 	serv := services.NewService(repo)
-	auth := controllers.NewAuthController(serv)
+	auth := handler.NewAuthController(serv)
 	router := router.SetupRouter(auth)
 	router.Run(":" + port)
 }
