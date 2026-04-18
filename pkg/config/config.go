@@ -17,7 +17,7 @@ type Config struct {
 }
 
 func LoadDotEnv() *Config {
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load("./.env")
 	if err != nil {
 		fmt.Errorf("error : erro ao ler a .env: %w", err)
 	}

@@ -37,6 +37,6 @@ func main() {
 	repo := repository.NewRepository(db)
 	serv := services.NewService(repo)
 	auth := controllers.NewAuthController(serv)
-	router := router.SetupRouter(*auth)
+	router := router.SetupRouter(auth)
 	router.Run(":" + port)
 }
