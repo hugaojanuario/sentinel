@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,10 @@ func (a *AuthController) Login(c *gin.Context) {
 
 	token, err := a.s.Login(req)
 	if err != nil {
+		if errors.Is(err, services.ErrInvalidCredentials) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "credenciais inválidas"})
+			return
+		}
 		utils.RespondError(c, err)
 		return
 	}

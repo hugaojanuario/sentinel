@@ -22,10 +22,10 @@ func Conn(cfg Config) (*sql.DB, error) {
 
 	db, err := sql.Open("postgres", strConn)
 	if err != nil {
-		fmt.Errorf("Erro ao conectar no banco: %w", err)
+		return nil, fmt.Errorf("erro ao conectar no banco: %w", err)
 	}
-	if db.Ping(); err != nil {
-		fmt.Errorf("Erro ao estabelecer a conexão com o banco: %w", err)
+	if err = db.Ping(); err != nil {
+		return nil, fmt.Errorf("erro ao estabelecer a conexão com o banco: %w", err)
 	}
 
 	return db, nil

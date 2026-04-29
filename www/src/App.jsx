@@ -2,13 +2,25 @@ import { useState, useEffect, useCallback } from 'react'
 import { listContainers } from './api'
 import ContainerCard from './components/ContainerCard'
 import ContainerPanel from './components/ContainerPanel'
+import Login from './components/Login'
 
 export default function App() {
+  const [token, setToken] = useState(() => localStorage.getItem('token'))
   const [containers, setContainers] = useState([])
   const [selected, setSelected] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [systemExpanded, setSystemExpanded] = useState(false)
+
+  function handleLogin(newToken) {
+    localStorage.setItem('token', newToken)
+    setToken(newToken)
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('token')
+    setToken(null)
+  }
 
   const fetchContainers = useCallback(async () => {
     try {
@@ -16,6 +28,11 @@ export default function App() {
       const data = await listContainers()
       setContainers(data)
     } catch (e) {
+      if (e.status === 401) {
+        localStorage.removeItem('token')
+        setToken(null)
+        return
+      }
       setError(e.message)
     } finally {
       setLoading(false)
@@ -23,10 +40,13 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (!token) { setLoading(false); return }
     fetchContainers()
     const interval = setInterval(fetchContainers, 15000)
     return () => clearInterval(interval)
-  }, [fetchContainers])
+  }, [fetchContainers, token])
+
+  if (!token) return <Login onLogin={handleLogin} />
 
   function handleSelect(container) {
     setSelected((prev) => (prev?.id === container.id ? null : container))
@@ -55,6 +75,7 @@ export default function App() {
         <div className="header-right">
           <span className="container-count">{userContainers.length} containers</span>
           <button className="refresh-btn" onClick={fetchContainers}>↺ Refresh</button>
+          <button className="btn-logout" onClick={handleLogout}>Sair</button>
         </div>
       </header>
 
