@@ -18,7 +18,7 @@ func SetupRouter(auth *handler2.AuthController) *gin.Engine {
 	//PROTECTED
 	protected := public.Group("/containers", middleware.AuthMiddleware())
 
-	protected.GET("/", handler2.ListContainers)
+	protected.GET("", handler2.ListContainers)
 	protected.POST("/:id/restart", handler2.RestartContainer)
 	protected.GET("/:id/logs", handler2.GetContainerLogs)
 	protected.GET("/:id/stats", handler2.GetContainerStats)
