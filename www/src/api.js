@@ -9,6 +9,19 @@ function unauthorized() {
   return Object.assign(new Error('Unauthorized'), { status: 401 })
 }
 
+export async function register(name, email, password) {
+  const res = await fetch(`${BASE}/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Erro ao criar conta')
+  }
+  return res.json()
+}
+
 export async function login(email, password) {
   const res = await fetch(`${BASE}/login`, {
     method: 'POST',
