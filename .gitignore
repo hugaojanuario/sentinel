@@ -25,9 +25,10 @@ vendor/
 *.swo
 
 # Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.cache/
+www/node_modules/
+www/dist/
+www/.cache/
+node_modules/
 
 # OS
 .DS_Store
