@@ -1,10 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/hugaojanuario/sentinel/internal/alerting"
+	"github.com/hugaojanuario/sentinel/internal/healthcheck"
 	"github.com/hugaojanuario/sentinel/internal/http/handler"
 	"github.com/hugaojanuario/sentinel/internal/http/router"
 	"github.com/hugaojanuario/sentinel/internal/repository"
@@ -30,9 +35,18 @@ func main() {
 		DB_SSLMODE:  cfg.DB_SSLMODE,
 	})
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatal(err)
 	}
 	defer db.Close()
+
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
+
+	checker := healthcheck.NewChecker(cfg.CHECK_INTERVAL)
+	alerter := alerting.NewAlerter(cfg.TELEGRAM_BOT_TOKEN, cfg.TELEGRAM_CHAT_ID, checker.Events())
+
+	go alerter.Run(ctx)
+	go checker.Run(ctx)
 
 	repo := repository.NewRepository(db)
 	serv := services.NewService(repo)
