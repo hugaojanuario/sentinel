@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -30,9 +31,16 @@ func NewAlerter(botToken, chatID string, events <-chan healthcheck.Event) *Alert
 }
 
 func (a *Alerter) Run(ctx context.Context) {
+	if a.botToken == "" || a.chatID == "" {
+		log.Printf("[alerter] AVISO: TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_ID vazios — alertas desabilitados")
+	} else {
+		log.Printf("[alerter] iniciado com chat_id=%s", a.chatID)
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
+			log.Printf("[alerter] encerrando")
 			return
 		case event := <-a.events:
 			a.handle(event)
@@ -57,7 +65,12 @@ func (a *Alerter) handle(event healthcheck.Event) {
 		return
 	}
 
-	_ = a.sendTelegram(msg)
+	log.Printf("[alerter] disparando alerta para container=%s status=%s", event.ContainerName, event.Status)
+	if err := a.sendTelegram(msg); err != nil {
+		log.Printf("[alerter] erro ao enviar telegram para container=%s: %v", event.ContainerName, err)
+	} else {
+		log.Printf("[alerter] alerta enviado com sucesso para container=%s", event.ContainerName)
+	}
 }
 
 func stateKey(event healthcheck.Event) string {
@@ -132,7 +145,7 @@ type telegramMessage struct {
 
 func (a *Alerter) sendTelegram(text string) error {
 	if a.botToken == "" || a.chatID == "" {
-		return nil
+		return fmt.Errorf("TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_ID nao configurados")
 	}
 
 	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", a.botToken)
@@ -155,7 +168,7 @@ func (a *Alerter) sendTelegram(text string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("telegram respondeu com status %d", resp.StatusCode)
+		return fmt.Errorf("telegram respondeu com status %d (verifique token e chat_id)", resp.StatusCode)
 	}
 
 	return nil

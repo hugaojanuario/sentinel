@@ -20,6 +20,7 @@ Sentinel is a lightweight service that runs on the same host as your containers 
 * Inspect CPU and memory usage
 * Stream logs in real time
 * Web interface included
+* Telegram alerts when a container stops, crashes, OOM-kills, or recovers
 
 ---
 
@@ -48,6 +49,15 @@ Copy the env file:
 ```bash
 cp .env.example .env
 ```
+
+Open `.env` and fill in the required values — especially the Telegram credentials if you want alerts:
+
+```
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_CHAT_ID=your_chat_id_here
+```
+
+Leave both empty to disable alerts.
 
 > **Windows users:** open `.env` and set `DOCKER_SOCK=//var/run/docker.sock`
 
@@ -191,6 +201,30 @@ frontend/
 
 ---
 
+## Telegram alerts
+
+Sentinel monitors all containers every 30 seconds and sends a Telegram message when:
+
+- A container **stops or crashes** — includes exit code and reason
+- A container is **OOM-killed** — out of memory
+- A container enters a **restart loop**
+- A container **recovers** and is running again
+
+To enable, create a bot via [@BotFather](https://t.me/BotFather) and set the credentials in `.env`:
+
+```
+TELEGRAM_BOT_TOKEN=123456789:ABC...
+TELEGRAM_CHAT_ID=your_chat_or_group_id
+```
+
+To get your chat ID: open the bot, send `/start`, then visit:
+```
+https://api.telegram.org/bot<TOKEN>/getUpdates
+```
+and find `"chat": { "id": ... }` in the response.
+
+---
+
 ## Environment variables
 
 | Variable | Default | Description |
@@ -198,3 +232,8 @@ frontend/
 | `PORT` | `9090` | Backend listening port |
 | `FRONTEND_PORT` | `80` | Frontend exposed port |
 | `DOCKER_SOCK` | `/var/run/docker.sock` | Docker socket path |
+| `TELEGRAM_BOT_TOKEN` | _(empty)_ | Telegram bot token — leave empty to disable alerts |
+| `TELEGRAM_CHAT_ID` | _(empty)_ | Telegram chat or group ID to receive alerts |
+| `CHECK_INTERVAL` | `30s` | How often containers are checked (e.g. `10s`, `1m`) |
+| `ALERT_CPU_THRESHOLD` | `80` | CPU usage % threshold (reserved for future alerts) |
+| `ALERT_MEM_THRESHOLD_MB` | `500` | Memory threshold in MB (reserved for future alerts) |

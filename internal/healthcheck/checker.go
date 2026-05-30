@@ -2,6 +2,7 @@ package healthcheck
 
 import (
 	"context"
+	"log"
 	"sync"
 	"time"
 
@@ -36,12 +37,14 @@ func (c *Checker) Events() <-chan Event {
 }
 
 func (c *Checker) Run(ctx context.Context) {
+	log.Printf("[checker] iniciado com intervalo=%s", c.interval)
 	ticker := time.NewTicker(c.interval)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
+			log.Printf("[checker] encerrando")
 			return
 		case <-ticker.C:
 			c.checkAll(ctx)
@@ -52,8 +55,10 @@ func (c *Checker) Run(ctx context.Context) {
 func (c *Checker) checkAll(ctx context.Context) {
 	containers, err := docker.ListAllContainers()
 	if err != nil {
+		log.Printf("[checker] erro ao listar containers: %v", err)
 		return
 	}
+	log.Printf("[checker] verificando %d containers", len(containers))
 
 	sem := make(chan struct{}, 5)
 	var wg sync.WaitGroup
@@ -72,6 +77,7 @@ func (c *Checker) checkAll(ctx context.Context) {
 
 			state, err := docker.InspectContainer(info.ID)
 			if err != nil {
+				log.Printf("[checker] erro ao inspecionar container %s: %v", info.ID[:12], err)
 				return
 			}
 
@@ -89,6 +95,7 @@ func (c *Checker) checkAll(ctx context.Context) {
 			select {
 			case c.events <- event:
 			default:
+				log.Printf("[checker] canal cheio, evento de container=%s descartado", event.ContainerName)
 			}
 		}(cont)
 	}
