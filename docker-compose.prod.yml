@@ -22,9 +22,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build:
-      context: ./www
-      dockerfile: Dockerfile
+    image: devhugojanuario/sentinel-frontend:latest
     ports:
       - "${FRONTEND_PORT:-80}:80"
     depends_on:
