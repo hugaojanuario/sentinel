@@ -39,10 +39,27 @@ resource "docker_container" "postgres" {
   restart = "unless-stopped"
 }
 
+resource "docker_image" "sentinel_frontend" {
+  name = "devhugojanuario/sentinel-frontend:latest"
+}
+
+resource "docker_container" "frontend" {
+  name = "sentinel_frontend"
+  image = docker_image.sentinel_frontend.image_id
+
+  networks_advanced {
+    name = docker_network.sentinel.name
+  }
+
+  ports {
+    internal = 80
+    external = 80
+  }
+
+}
 resource "docker_image" "sentinel_backend" {
   name = "devhugojanuario/sentinel:latest"
 }
-
 resource "docker_container" "backend" {
   name  = "sentinel_backend"
   image = docker_image.sentinel_backend.image_id
