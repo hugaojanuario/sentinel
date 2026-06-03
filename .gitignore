@@ -24,6 +24,9 @@ infra/terraform/terraform.tfstate
 infra/terraform/terraform.tfstate.backup
 infra/terraform/*.tfvars
 
+#K8s
+secrets.yaml
+
 # IDE
 .idea/
 .vscode/
