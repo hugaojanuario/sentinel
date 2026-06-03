@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentinel-configmap
+  namespace: sentinel
+data:
+  PORT: "9090"
+  DB_HOST: "sentinel-postgres"
+  DB_PORT: "5432"
+  DB_NAME: "sentinel"
+  DB_SSLMODE: "disable"
