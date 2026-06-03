@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-deployment-postgres
+  namespace: sentinel
+spec:
+  selector:
+    matchLabels:
+      app: sentinel-postgres
+  template:
+    metadata:
+      labels:
+        app: sentinel-postgres
+    spec:
+      containers:
+      - name: sentinel-postgres
+        image: postgres:16-alpine
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: sentinel-secrets
+                key: db_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sentinel-secrets
+                key: db_password
+          - name: POSTGRES_DB
+            value: sentinel
+        volumeMounts:
+          - name: postgres-data
+            mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: sentinel-pvc-postgres
+
+
+    

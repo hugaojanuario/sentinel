@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-postgres
+  namespace: sentinel
+spec:
+  selector:
+    app: sentinel-postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
