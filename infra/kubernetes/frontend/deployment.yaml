@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-deployment-frontend
+  namespace: sentinel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentinel-frontend
+  template:
+    metadata:
+      name: sentinel-frontend
+      labels:
+        app: sentinel-frontend
+    spec:
+      containers:
+        - name: sentinel-frontend
+          image: devhugojanuario/sentinel-frontend:latest
+          ports:
+            - containerPort: 80

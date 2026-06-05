@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-backend
+  namespace: sentinel
+spec:
+  selector:
+    app: sentinel-backend
+  ports:
+    - port: 9090
+      targetPort: 9090
