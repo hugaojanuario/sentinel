@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-deployment-backend
+  namespace: sentinel
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sentinel-backend
+  template:
+    metadata:
+      labels:
+        app: sentinel-backend
+    spec:
+      containers:
+      - name: sentinel-backend
+        image: devhugojanuario/sentinel:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9090
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: sentinel-configmap
+              key: PORT
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: sentinel-configmap
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: sentinel-configmap
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: sentinel-configmap
+              key: DB_NAME
+        - name: DB_SSLMODE
+          valueFrom:
+            configMapKeyRef:
+              name: sentinel-configmap
+              key: DB_SSLMODE
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: sentinel-secrets
+              key: db_user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sentinel-secrets
+              key: db_password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: sentinel-secrets
+              key: jwt_secret
+        volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
