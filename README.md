@@ -237,3 +237,4 @@ and find `"chat": { "id": ... }` in the response.
 | `CHECK_INTERVAL` | `30s` | How often containers are checked (e.g. `10s`, `1m`) |
 | `ALERT_CPU_THRESHOLD` | `80` | CPU usage % threshold (reserved for future alerts) |
 | `ALERT_MEM_THRESHOLD_MB` | `500` | Memory threshold in MB (reserved for future alerts) |
+# 1000
