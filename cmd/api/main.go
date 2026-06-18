@@ -48,9 +48,10 @@ func main() {
 	go alerter.Run(ctx)
 	go checker.Run(ctx)
 
+	secret := []byte(cfg.JWT_SECRET)
 	repo := repository.NewRepository(db)
-	serv := services.NewService(repo)
+	serv := services.NewService(repo, secret)
 	auth := handler.NewAuthController(serv)
-	router := router.SetupRouter(auth)
+	router := router.SetupRouter(auth, secret)
 	router.Run(":" + port)
 }

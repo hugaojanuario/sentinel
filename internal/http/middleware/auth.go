@@ -7,10 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hugaojanuario/sentinel/internal/services"
-	"github.com/hugaojanuario/sentinel/pkg/config"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(secret []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 		if header == "" {
@@ -22,7 +21,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		tokenStr := strings.TrimPrefix(header, "Bearer ")
 
 		token, err := jwt.ParseWithClaims(tokenStr, &services.Claims{}, func(t *jwt.Token) (interface{}, error) {
-			return []byte(config.LoadDotEnv().JWT_SECRET), nil
+			return secret, nil
 		})
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "token inválido"})

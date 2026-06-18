@@ -7,7 +7,7 @@ import (
 	"github.com/hugaojanuario/sentinel/internal/http/middleware"
 )
 
-func SetupRouter(auth *handler2.AuthController) *gin.Engine {
+func SetupRouter(auth *handler2.AuthController, secret []byte) *gin.Engine {
 	//PUBLIC
 	public := gin.Default()
 	public.Use(cors.Default())
@@ -16,7 +16,7 @@ func SetupRouter(auth *handler2.AuthController) *gin.Engine {
 	public.POST("/login", auth.Login)
 
 	//PROTECTED
-	protected := public.Group("/containers", middleware.AuthMiddleware())
+	protected := public.Group("/containers", middleware.AuthMiddleware(secret))
 
 	protected.GET("", handler2.ListContainers)
 	protected.POST("/:id/restart", handler2.RestartContainer)

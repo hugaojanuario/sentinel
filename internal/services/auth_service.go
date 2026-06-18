@@ -8,11 +8,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hugaojanuario/sentinel/internal/models"
 	"github.com/hugaojanuario/sentinel/internal/repository"
-	"github.com/hugaojanuario/sentinel/pkg/config"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var secret = []byte(config.LoadDotEnv().JWT_SECRET)
 var ErrInvalidCredentials = errors.New("invalid credentials")
 
 type Claims struct {
@@ -21,11 +19,12 @@ type Claims struct {
 }
 
 type Service struct {
-	r *repository.Repository
+	r      *repository.Repository
+	secret []byte
 }
 
-func NewService(r *repository.Repository) *Service {
-	return &Service{r: r}
+func NewService(r *repository.Repository, secret []byte) *Service {
+	return &Service{r: r, secret: secret}
 }
 
 func (s *Service) CreateUser(req models.CreateUserRequest) (*models.User, error) {
@@ -66,7 +65,7 @@ func (s *Service) Login(req models.LoginRequest) (*models.LoginResponse, error) 
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenStr, err := token.SignedString(secret)
+	tokenStr, err := token.SignedString(s.secret)
 	if err != nil {
 		return nil, fmt.Errorf("erro ao assinar token: %w", err)
 	}
