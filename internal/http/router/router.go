@@ -5,11 +5,11 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	handler2 "github.com/hugaojanuario/sentinel/internal/http/handler"
+	"github.com/hugaojanuario/sentinel/internal/http/handler"
 	"github.com/hugaojanuario/sentinel/internal/http/middleware"
 )
 
-func SetupRouter(auth *handler2.AuthController, secret []byte) *gin.Engine {
+func SetupRouter(auth *handler.AuthController, secret []byte) *gin.Engine {
 	//PUBLIC
 	public := gin.Default()
 	public.Use(cors.New(cors.Config{
@@ -26,11 +26,11 @@ func SetupRouter(auth *handler2.AuthController, secret []byte) *gin.Engine {
 	//PROTECTED
 	protected := public.Group("/containers", middleware.AuthMiddleware(secret))
 
-	protected.GET("", handler2.ListContainers)
-	protected.POST("/:id/restart", handler2.RestartContainer)
-	protected.GET("/:id/logs", handler2.GetContainerLogs)
-	protected.GET("/:id/stats", handler2.GetContainerStats)
-	protected.GET("/:id/logs/stream", handler2.StreamLogs)
+	protected.GET("", handler.ListContainers)
+	protected.POST("/:id/restart", handler.RestartContainer)
+	protected.GET("/:id/logs", handler.GetContainerLogs)
+	protected.GET("/:id/stats", handler.GetContainerStats)
+	protected.GET("/:id/logs/stream", handler.StreamLogs)
 
 	return public
 }
