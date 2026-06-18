@@ -21,6 +21,7 @@ type Config struct {
 	ALERT_CPU_THRESHOLD    float64
 	ALERT_MEM_THRESHOLD_MB uint64
 	CHECK_INTERVAL         time.Duration
+	JWT_SECRET             string
 }
 
 func LoadDotEnv() *Config {
@@ -55,5 +56,6 @@ func LoadDotEnv() *Config {
 		ALERT_CPU_THRESHOLD:    cpuThreshold,
 		ALERT_MEM_THRESHOLD_MB: memThreshold,
 		CHECK_INTERVAL:         checkInterval,
+		JWT_SECRET:             os.Getenv("JWT_SECRET"),
 	}
 }

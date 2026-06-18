@@ -96,24 +96,24 @@ func buildMessage(event healthcheck.Event, prevKey string) string {
 	case "exited", "dead":
 		if event.OOMKilled {
 			return fmt.Sprintf(
-				"🔴 <b>%s CAIU</b>\nMotivo: OOM Kill (sem memória)\nExit code: %d\nParou em: %s",
+				"<b>%s CAIU</b>\nMotivo: OOM Kill (sem memória)\nExit code: %d\nParou em: %s",
 				event.ContainerName, event.ExitCode, formatTime(event.FinishedAt),
 			)
 		}
 		reason := exitReason(event)
 		return fmt.Sprintf(
-			"🔴 <b>%s CAIU</b>\nMotivo: %s\nExit code: %d\nParou em: %s",
+			"<b>%s CAIU</b>\nMotivo: %s\nExit code: %d\nParou em: %s",
 			event.ContainerName, reason, event.ExitCode, formatTime(event.FinishedAt),
 		)
 	case "restarting":
 		return fmt.Sprintf(
-			"⚠️ <b>%s está reiniciando</b>\nO container entrou em restart loop.\nÚltimo exit code: %d\nVerificado em: %s",
+			"<b>%s está reiniciando</b>\nO container entrou em restart loop.\nÚltimo exit code: %d\nVerificado em: %s",
 			event.ContainerName, event.ExitCode, ts,
 		)
 	case "running":
 		if prevKey != "" && prevKey != "running" {
 			return fmt.Sprintf(
-				"✅ <b>%s voltou</b>\nO container se recuperou e está saudável novamente.\nEm: %s",
+				"<b>%s voltou</b>\nO container se recuperou e está saudável novamente.\nEm: %s",
 				event.ContainerName, ts,
 			)
 		}

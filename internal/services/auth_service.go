@@ -3,16 +3,16 @@ package services
 import (
 	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hugaojanuario/sentinel/internal/models"
 	"github.com/hugaojanuario/sentinel/internal/repository"
+	"github.com/hugaojanuario/sentinel/pkg/config"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var secret = []byte(os.Getenv("JWT_SECRET"))
+var secret = []byte(config.LoadDotEnv().JWT_SECRET)
 var ErrInvalidCredentials = errors.New("invalid credentials")
 
 type Claims struct {
