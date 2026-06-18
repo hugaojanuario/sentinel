@@ -1,6 +1,8 @@
 package router
 
 import (
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	handler2 "github.com/hugaojanuario/sentinel/internal/http/handler"
@@ -10,7 +12,13 @@ import (
 func SetupRouter(auth *handler2.AuthController, secret []byte) *gin.Engine {
 	//PUBLIC
 	public := gin.Default()
-	public.Use(cors.Default())
+	public.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost", "http://localhost:8080"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	public.POST("/register", auth.Register)
 	public.POST("/login", auth.Login)

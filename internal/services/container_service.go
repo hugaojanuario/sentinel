@@ -2,7 +2,7 @@ package services
 
 import "github.com/hugaojanuario/sentinel/internal/docker"
 
-func ListContainers() (interface{}, error) {
+func ListContainers() ([]docker.ContainerInfo, error) {
 	containers, err := docker.ListContainers()
 
 	if err != nil {

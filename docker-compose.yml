@@ -11,7 +11,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_SSLMODE=disable
-      - JWT_SECRET=${JWT_SECRET:-secret}
+      - JWT_SECRET=${JWT_SECRET}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
       - ALERT_CPU_THRESHOLD=${ALERT_CPU_THRESHOLD:-80}
@@ -61,7 +61,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d sentinel" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d sentinel"]
       interval: 5s
       timeout: 5s
       retries: 5
