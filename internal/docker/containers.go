@@ -59,9 +59,14 @@ func ListContainers() ([]ContainerInfo, error) {
 	var result []ContainerInfo
 	for _, c := range containers {
 
+		name := ""
+		if len(c.Names) > 0 {
+			name = c.Names[0]
+		}
+
 		result = append(result, ContainerInfo{
 			ID:     c.ID,
-			Name:   c.Names[0],
+			Name:   name,
 			Image:  c.Image,
 			Status: c.Status,
 		})
