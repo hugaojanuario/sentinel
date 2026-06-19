@@ -64,7 +64,22 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	if err := srv.ListenAndServe(); err != nil {
-		log.Fatal(err)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("erro no servidor: %v", err)
+		}
+	}()
+	log.Printf("Sentinel ouvindo na porta %s", port)
+
+	<-ctx.Done()
+	log.Println("desligando servidor...")
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("erro no shutdown: %v", err)
 	}
+
+	log.Println("servidor encerrado")
 }
