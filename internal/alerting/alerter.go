@@ -161,7 +161,8 @@ func (a *Alerter) sendTelegram(text string) error {
 		return err
 	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewReader(body))
+	client := http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Post(url, "application/json", bytes.NewReader(body))
 	if err != nil {
 		return err
 	}

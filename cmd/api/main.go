@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/hugaojanuario/sentinel/internal/alerting"
 	"github.com/hugaojanuario/sentinel/internal/healthcheck"
@@ -53,5 +55,16 @@ func main() {
 	serv := services.NewService(repo, secret)
 	auth := handler.NewAuthController(serv)
 	router := router.SetupRouter(auth, secret)
-	router.Run(":" + port)
+
+	srv := &http.Server{
+		Addr:         ":" + port,
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }
